@@ -6,10 +6,11 @@ from src.fields import Fields
 from src.utils import kebab_case, sort_dict_by_keys, unicode_to_ascii
 
 
-def make_folders(query_kebab):
-  create_directory_if_not_exists(f"output/{query_kebab}/")
-  create_directory_if_not_exists(f"output/{query_kebab}/json/")
-  create_directory_if_not_exists(f"output/{query_kebab}/csv/")
+def make_folders(query_kebab, path='output'):
+  create_directory_if_not_exists(f"{path}")
+  create_directory_if_not_exists(f"{path}/{query_kebab}/")
+  create_directory_if_not_exists(f"{path}/{query_kebab}/json/")
+  create_directory_if_not_exists(f"{path}/{query_kebab}/csv/")
   pass
 
 
@@ -435,14 +436,13 @@ def create(places, selected_fields, csv_path, json_path, query_kebab):
     #   bt.prompt("The file is currently open in another application (e.g., Excel). Please close the file and then press 'Enter' to save.")
     #   create(places, selected_fields, csv_path, json_path)
     
-def write_output(query, places, selected_fields):
-    
+def write_output(query, places, selected_fields, path='output'):
 
-    query_kebab = kebab_case(query)
-    make_folders(query_kebab)
+    query_kebab = kebab_case(query + '-reviews')
+    make_folders(query_kebab, path=path)
 
-    csv_path = f"output/{query_kebab}/csv/" 
-    json_path = f"output/{query_kebab}/json/"
+    csv_path = f"{path}/{query_kebab}/csv/" 
+    json_path = f"{path}/{query_kebab}/json/"
     # + query_kebab + "-"
 
 

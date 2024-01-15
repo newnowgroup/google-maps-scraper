@@ -186,7 +186,10 @@ def determine_fields(fields, should_scrape_socials, scrape_reviews):
       
       return ls
 
-def process_result(min_reviews, max_reviews, category_in, has_website, has_phone, min_rating, max_rating, sort, key, scrape_reviews, reviews_max, reviews_sort, fields, lang, should_scrape_socials,convert_to_english, cache, places_obj):
+def process_result(min_reviews, max_reviews, category_in, has_website, has_phone, min_rating, max_rating,
+                   sort, key, scrape_reviews, reviews_max, reviews_sort, fields, lang, 
+                   should_scrape_socials, convert_to_english, cache, places_obj, path='output'):
+      
       places = places_obj["places"]
       query = places_obj["query"]
         # Sort and Filter TODO: do later
@@ -227,7 +230,7 @@ def process_result(min_reviews, max_reviews, category_in, has_website, has_phone
       cleaned_places = ls 
 
         # 4. Write Output
-      write_output(query, cleaned_places, fields)
+      write_output(query, cleaned_places, fields, path=path)
         
       result_item = {"query": query, "places": cleaned_places}
       return result_item
@@ -301,7 +304,8 @@ class Gmaps:
              fields: Optional[List[str]] = DEFAULT_FIELDS,
              lang: Optional[str] = None,
              geo_coordinates: Optional[str] = None,
-             zoom: Optional[float] = None) -> List[Dict]:
+             zoom: Optional[float] = None,
+             path: str = 'output') -> List[Dict]:
       """
       Function to scrape Google Maps places based on various criteria.
 
@@ -325,6 +329,7 @@ class Gmaps:
       :param lang: Language in which to return the results.
       :param geo_coordinates: Geographical coordinates to scrape around.
       :param zoom: Zoom level for scraping.
+      :param path: the root path where to save the results.
       :return: List of dictionaries with the scraped place data.
       """
 
@@ -335,15 +340,20 @@ class Gmaps:
           
       for query in queries:
         # 1. Scrape Places
-        place_data = create_place_data(query, is_spending_on_ads, max, lang, geo_coordinates, zoom, convert_to_english)
+        place_data = create_place_data(query, is_spending_on_ads, max, lang, geo_coordinates, zoom, 
+                                       convert_to_english)
         places_obj = scraper.scrape_places(place_data, cache = use_cache)
 
-        result_item = process_result(min_reviews, max_reviews, category_in, has_website, has_phone, min_rating, max_rating, sort, key, scrape_reviews, reviews_max, reviews_sort, fields, lang, should_scrape_socials, convert_to_english,use_cache,places_obj)
+        result_item = process_result(min_reviews, max_reviews, category_in, has_website, has_phone, 
+                                     min_rating, max_rating, sort, key, scrape_reviews, reviews_max, 
+                                     reviews_sort, fields, lang, should_scrape_socials, 
+                                     convert_to_english, use_cache, places_obj, path=path)
 
         result.append(result_item)
       
-      all_places = sort_places(merge_places(result), sort)
-      write_output("all", all_places, fields)
+      if len(queries) > 1:
+        all_places = sort_places(merge_places(result), sort)
+        write_output("all-queries", all_places, fields, path=path)
 
       scraper.scrape_places.close()
       return result
