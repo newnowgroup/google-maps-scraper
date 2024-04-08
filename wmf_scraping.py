@@ -5,10 +5,6 @@ path_root = os.getenv("ONEDRIVE_PATH")
 if not os.path.isdir(path_root):
     raise "you do not have the ONEDRIVE_PATH environment variable set up. Please set it up first."
 
-path_root = os.path.join(path_root, 'additionals')
-if not os.path.isdir(path_root):
-    os.mkdir(path_root)
-
 # iterate accross all german cities
 queries = Gmaps.Cities.Germany("'WMF'")
 
